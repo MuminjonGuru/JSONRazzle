@@ -109,10 +109,25 @@ def parse(tokens):
     return not stack
 
 
+def validate_JSON_file(file_name):
+    with open(file_name, 'r') as file:
+        content = file.read()
+
+    tokens = lexer(content)
+    return parse(tokens)
+
+
 if __name__ == "__main__":
     input_str = input()  # Read the input JSON string from standard input.
     tokens = lexer(input_str)
     is_valid = parse(tokens)
+
+    # # Example Usage:
+    # file_name = "test.json"
+    # if validate_json_file(file_name):
+    #     print(f"'{file_name}' valid JSON.")
+    # else:
+    #     print(f"'{file_name}' invalid JSON.")
 
     if is_valid:
         print("Valid JSON")
