@@ -24,7 +24,7 @@ def lexer(input_str):
         elif char == '"':
             start = i
             i += 1
-            while i < len(input_str) and input_str[i] != '"';
+            while i < len(input_str) and input_str[i] != '"':
                 i += 1
             tokens.append(input_str[start:i+1])
             i += 1
@@ -50,19 +50,73 @@ def lexer(input_str):
     
     return tokens
 
+
 def parse(tokens):
-    # Here we will write the code to parse the tokenized data and check for the JSON grammar.
+    # Here we will write the code to parse the toksenized data and check for the JSON grammar.
     # If the grammar is correct, we will return True, else False.
-    if tokens:
-        # Here we take the tokenized data check for the JSON grammar.
-        #   if it is in correct order/grammar we're good to go
-        return True
-    else:
-        return False
+
+    stack = []
+    last_token = None
+
+    for token in tokens:
+        if token in ['{', '[']:
+            stack.append(token)
+        elif token == '}':
+            if not stack or stack[-1] != '{':
+                return False
+            stack.pop()
+
+            # make sure there's either another object, an array, or it's the end
+            if last_token not in ['}', ']', '"', True, False, None] and (type(last_token) != int):
+                return False
+            
+        elif token == ']':
+            if not stack or stack[-1] != '[':
+                return False
+            stack.pop()
+
+            if last_token not in ['}', ']', '"', True, False, None] and (type(last_token) != int):
+                return False 
+        
+        elif token == ':':
+            # check if there is a key before a colon
+            if last_token == '"' or type(last_token) != str:
+                return False
+            
+        elif token == ',':
+            # check there is a value before a comma
+            if last_token in ['{', '[', ':', ',']:
+                return False
+            
+        # start checking for keys or values (strings)
+        elif type(token) == str:
+            # check for correct placement
+            if last_token not in ['{', ':', ',']:
+                return False
+            
+        # validate digits
+        elif type(token) == str:
+            if last_token not in [':', ',']:
+                return False
+    
+        elif token in [True, False, None]:
+            if last_token not in [':', ',']:
+                return False
+            
+        last_token = token
+
+    # if it balanced, it should be empty
+    return not stack
+
 
 if __name__ == "__main__":
     input_str = input()  # Read the input JSON string from standard input.
     tokens = lexer(input_str)
     is_valid = parse(tokens)
 
-    # I will come back here
+    if is_valid:
+        print("Valid JSON")
+        sys.exit(0)
+    else:
+        print("Invalid JSON")
+        sys.exit(1)
