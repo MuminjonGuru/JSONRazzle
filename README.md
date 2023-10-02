@@ -1,6 +1,3 @@
-# JSONRazzle
-My own JSON Parser called JSONRazzle
-
 # JSONRazzle - JSON Validator
 
 A basic JSON validator built using Python to demonstrate lexical and syntactic analysis. While it may not cover the entire JSON specification comprehensively, it provides insights into the process of parsing and validation.
